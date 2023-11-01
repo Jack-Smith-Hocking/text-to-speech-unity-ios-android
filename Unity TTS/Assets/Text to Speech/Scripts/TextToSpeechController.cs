@@ -5,9 +5,9 @@ namespace TextToSpeech
 {
 	public class TextToSpeechController : ITextToSpeechController
 	{
-        public static TextToSpeechController Instance { get; } = new();
+		public static TextToSpeechController Instance { get; } = new();
 
-        public bool IsSpeaking => _controller.IsSpeaking;
+		public bool IsSpeaking => _controller.IsSpeaking;
 
 		public string Locale => _controller.Locale;
 		public float Pitch => _controller.Pitch;
@@ -15,11 +15,12 @@ namespace TextToSpeech
 
 		public event System.Action<string> OnStartSpeak;
 		public event System.Action OnStopSpeak;
+		public event System.Action OnCompleteSpeak;
 
 		private ITextToSpeechController _controller;
 
-        private TextToSpeechController()
-        {
+		private TextToSpeechController()
+		{
 #if UNITY_EDITOR
 			_controller = EditorTextToSpeechController.Instance;
 #elif UNITY_ANDROID
@@ -27,23 +28,25 @@ namespace TextToSpeech
 #endif
 
 			_controller.OnStartSpeak += OnStartSpeak;
-            _controller.OnStopSpeak += OnStopSpeak;
-        }
-        ~TextToSpeechController()
-        {
-            if (_controller != null)
-            {
-                _controller.OnStartSpeak -= OnStartSpeak;
-                _controller.OnStopSpeak -= OnStopSpeak;
-            }
+			_controller.OnStopSpeak += OnStopSpeak;
+			_controller.OnCompleteSpeak += OnCompleteSpeak;
+		}
+		~TextToSpeechController()
+		{
+			if (_controller != null)
+			{
+				_controller.OnStartSpeak -= OnStartSpeak;
+				_controller.OnStopSpeak -= OnStopSpeak;
+				_controller.OnCompleteSpeak -= OnCompleteSpeak;
+			}
 		}
 
 		public void Setup(string locale, float pitch, float rate)
 		{
-            _controller.Setup(locale, pitch, rate);
+			_controller.Setup(locale, pitch, rate);
 		}
 
-		public void Speak(string text, Action onComplete = null)
+		public void Speak(string text, Action<TextToSpeechComplete> onComplete = null)
 		{
 			Debug.Log("[TTS] Speaking: " + text);
 			_controller.Speak(text, onComplete);

@@ -5,38 +5,39 @@ using System;
 namespace TextToSpeech
 {
 	public class AndroidTextToSpeechController : MonoBehaviour, ITextToSpeechController
-    {
-        public static AndroidTextToSpeechController Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    // Create if it doesn't exist
-                    _instance = new GameObject("TextToSpeech")
+	{
+		public static AndroidTextToSpeechController Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					// Create if it doesn't exist
+					_instance = new GameObject("TextToSpeech")
 						.AddComponent<AndroidTextToSpeechController>();
-                }
+				}
 
-                return _instance;
-            }
-        }
+				return _instance;
+			}
+		}
 		private static AndroidTextToSpeechController _instance;
 
 		public bool IsSpeaking { get; private set; }
 
 		public string Locale { get; private set; }
 
-        public float Pitch { get; private set; } = 1;
-        public float Rate { get; private set; } = 1;
+		public float Pitch { get; private set; } = 1;
+		public float Rate { get; private set; } = 1;
 
 		public event Action<string> OnStartSpeak;
 		public event Action OnStopSpeak;
+		public event Action OnCompleteSpeak;
 
-		private System.Action _callback;
+		private System.Action<TextToSpeechComplete> _callback;
 
 		public void Setup(string locale, float pitch, float rate)
-        {
-            Pitch = Mathf.Clamp(pitch, 0.5f, 2);
+		{
+			Pitch = Mathf.Clamp(pitch, 0.5f, 2);
 			Rate = Mathf.Clamp(rate, 0.5f, 2);
 
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -45,7 +46,7 @@ namespace TextToSpeech
 #endif
 		}
 
-		public void Speak(string text, Action onComplete = null)
+		public void Speak(string text, Action<TextToSpeechComplete> onComplete = null)
 		{
 #if UNITY_ANDROID && !UNITY_EDITOR
         AndroidJavaClass javaUnityClass = new AndroidJavaClass("com.starseed.texttospeech.Bridge");
@@ -63,7 +64,7 @@ namespace TextToSpeech
         AndroidJavaClass javaUnityClass = new AndroidJavaClass("com.starseed.texttospeech.Bridge");
         javaUnityClass.CallStatic("StopTextToSpeech");
 #endif
-			OnComplete();
+			OnComplete(TextToSpeechComplete.Stopped);
 		}
 
 		#region Native Android
@@ -89,35 +90,40 @@ namespace TextToSpeech
 		}
 
 		public void OnStart(string text)
-        {
+		{
 			Debug.Log("[TTS-Android] Started Speaking: " + text);
-        }
-        public void OnDone(string text)
-        {
+		}
+		public void OnDone(string text)
+		{
 			Debug.Log("[TTS-Android] Done Speaking: " + text);
-			OnComplete();
-        }
+			OnComplete(TextToSpeechComplete.Normal);
+		}
 
-        public void OnError(string text)
-        {
+		public void OnError(string text)
+		{
 			Debug.Log("[TTS-Android] Error Speaking: " + text);
-			OnComplete();
+			OnComplete(TextToSpeechComplete.Error);
 		}
 		public void OnMessage(string text)
-        {
-        }
+		{
+		}
 		#endregion
 
-		private void OnComplete()
+		private void OnComplete(TextToSpeechComplete status)
 		{
 			Debug.Log("[TTS-Android] Complete Speaking");
 
 			IsSpeaking = false;
 
-			_callback?.Invoke();
+			_callback?.Invoke(status);
 			_callback = null;
 
-			OnStopSpeak?.Invoke();
+			if (status == TextToSpeechComplete.Stopped)
+			{
+				OnStopSpeak?.Invoke();
+			}
+
+			OnCompleteSpeak?.Invoke();
 		}
 	}
 }

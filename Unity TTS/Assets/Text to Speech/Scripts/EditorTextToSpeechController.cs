@@ -15,8 +15,9 @@ namespace TextToSpeech
 
 		public event Action<string> OnStartSpeak;
 		public event Action OnStopSpeak;
+		public event Action OnCompleteSpeak;
 
-		private System.Action _callback;
+		private System.Action<TextToSpeechComplete> _callback;
 
 		private EditorTextToSpeechController()
 		{
@@ -29,7 +30,7 @@ namespace TextToSpeech
 			Rate = rate;
 		}
 
-		public void Speak(string text, Action onComplete = null)
+		public void Speak(string text, Action<TextToSpeechComplete> onComplete = null)
 		{
 			IsSpeaking = true;
 
@@ -43,9 +44,11 @@ namespace TextToSpeech
 		{
 			IsSpeaking = false;
 
-			_callback?.Invoke();
+			_callback?.Invoke(TextToSpeechComplete.Stopped);
 			_callback = null;
+
 			OnStopSpeak?.Invoke();
+			OnCompleteSpeak?.Invoke();
 		}
 	}
 }

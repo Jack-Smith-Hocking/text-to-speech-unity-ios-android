@@ -1,19 +1,29 @@
-﻿namespace TextToSpeech
+﻿using System;
+
+namespace TextToSpeech
 {
+	public enum TextToSpeechComplete
+	{
+		Normal,
+		Stopped,
+		Error
+	}
+
 	public interface ITextToSpeechController
-    {
-        bool IsSpeaking { get; }
-        
-        string Locale { get; }
-        float Pitch { get; }
-        float Rate { get; }
+	{
+		bool IsSpeaking { get; }
 
-        event System.Action<string> OnStartSpeak;
-        event System.Action OnStopSpeak;
+		string Locale { get; }
+		float Pitch { get; }
+		float Rate { get; }
 
-        void Setup(string locale, float pitch, float rate);
+		event System.Action<string> OnStartSpeak;
+		event System.Action OnStopSpeak;
+		public event System.Action OnCompleteSpeak;
 
-        void Speak(string text, System.Action onComplete = null);
-        void Stop();
-    }
+		void Setup(string locale, float pitch, float rate);
+
+		void Speak(string text, Action<TextToSpeechComplete> onComplete = null);
+		void Stop();
+	}
 }
