@@ -13,8 +13,8 @@ namespace TextToSpeech
 		public float Pitch => _controller.Pitch;
 		public float Rate => _controller.Rate;
 
-		public event System.Action<string> OnSpeak;
-		public event System.Action OnStop;
+		public event System.Action<string> OnStartSpeak;
+		public event System.Action OnStopSpeak;
 
 		private ITextToSpeechController _controller;
 
@@ -26,15 +26,15 @@ namespace TextToSpeech
 			_controller = AndroidTextToSpeechController.Instance;
 #endif
 
-			_controller.OnSpeak += OnSpeak;
-            _controller.OnStop += OnStop;
+			_controller.OnStartSpeak += OnStartSpeak;
+            _controller.OnStopSpeak += OnStopSpeak;
         }
         ~TextToSpeechController()
         {
             if (_controller != null)
             {
-                _controller.OnSpeak -= OnSpeak;
-                _controller.OnStop -= OnStop;
+                _controller.OnStartSpeak -= OnStartSpeak;
+                _controller.OnStopSpeak -= OnStopSpeak;
             }
 		}
 

@@ -8,8 +8,8 @@
         float Pitch { get; }
         float Rate { get; }
 
-        event System.Action<string> OnSpeak;
-        event System.Action OnStop;
+        event System.Action<string> OnStartSpeak;
+        event System.Action OnStopSpeak;
 
         void Setup(string locale, float pitch, float rate);
 

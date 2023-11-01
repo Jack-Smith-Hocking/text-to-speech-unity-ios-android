@@ -13,8 +13,8 @@ namespace TextToSpeech
 		public float Pitch { get; private set; }
 		public float Rate { get; private set; }
 
-		public event Action<string> OnSpeak;
-		public event Action OnStop;
+		public event Action<string> OnStartSpeak;
+		public event Action OnStopSpeak;
 
 		private System.Action _callback;
 
@@ -34,7 +34,7 @@ namespace TextToSpeech
 			IsSpeaking = true;
 
 			_callback = onComplete;
-			OnSpeak?.Invoke(text);
+			OnStartSpeak?.Invoke(text);
 
 			Stop();
 		}
@@ -45,7 +45,7 @@ namespace TextToSpeech
 
 			_callback?.Invoke();
 			_callback = null;
-			OnStop?.Invoke();
+			OnStopSpeak?.Invoke();
 		}
 	}
 }
