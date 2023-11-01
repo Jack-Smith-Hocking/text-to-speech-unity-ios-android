@@ -1,7 +1,7 @@
 # Text to Speech in Unity iOS and Unity Android
-I have provide all java and object c source. you can know how it work, optimization, or add any features
+I have provided all Java and object C source. You can learn how it works, optimize, or add any features.
 
-## Native Speech and Text
+## Native Text to Speech
 * TextToSpeech Android: https://developer.android.com/reference/android/speech/tts/TextToSpeech.html
 * TextToSpeech iOS: https://developer.apple.com/reference/avfoundation
 
