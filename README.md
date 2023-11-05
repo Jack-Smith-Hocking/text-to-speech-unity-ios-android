@@ -8,7 +8,7 @@ I have provided all Java and object C source. You can learn how it works, optimi
 ## Android
 * ClassNotFoundException:
   * Caused by minification of the java code, either turn "Player/Publisher Settings/Minify" off or;
-  * Add a [keep declaration](https://developer.android.com/build/shrink-code#keep-code) to your proguard file: `-keep class com.starseed.texttospeech.** { *; }]`
+  * Add a [keep declaration](https://developer.android.com/build/shrink-code#keep-code) to your proguard file: `-keep class com.starseed.texttospeech.** { *; }`
 
 ## Xcode
 * Requires Xcode8 or higher. Target iOS 10.0
